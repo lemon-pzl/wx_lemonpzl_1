@@ -7,7 +7,8 @@ import org.lemonpzl.commons.repository.UserRepository;
 import org.lemonpzl.weixin.service.TokenManager;
 import org.lemonpzl.weixin.service.WeixinProxy;
 import org.springframework.beans.factory.annotation.Autowired;
-
+import org.springframework.stereotype.Service;
+@Service("subscribeMessageProcessor")
 public class SubscribeEventMessageProcessor implements EventMessageProcessor {
 	
 	 @Autowired

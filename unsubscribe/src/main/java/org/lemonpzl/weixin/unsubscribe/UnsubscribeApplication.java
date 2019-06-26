@@ -1,4 +1,4 @@
-package org.lemonpzl.weixin;
+package org.lemonpzl.weixin.unsubscribe;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,54 +37,49 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @EntityScan("org.lemonpzl")
 @ComponentScan("org.lemonpzl")
 @EnableJpaRepositories("org.lemonpzl")
-public class SubscribeApplication implements //
-  EventListenerConfig,//
-   //得到spring的容器
-   ApplicationContextAware
-{
-	private ApplicationContext ctx; //spring容器
-	
-	@Override
-	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-		// TODO 自动生成的方法存根
-		ctx = applicationContext;
-	}
-	
+public class UnsubscribeApplication implements //
+EventListenerConfig,
+// 得到Spring的容器
+ApplicationContextAware {
+private static final Logger LOG = LoggerFactory.getLogger(UnsubscribeApplication.class);
+private ApplicationContext ctx;// Spring容器
 
-	private static final Logger LOG = LoggerFactory.getLogger(SubscribeApplication.class);
-	public void handle(EventInMessage msg) {
-		// 1.当前类实现ApplicationContextAware接口，用于获得Spring容器
-				// 2.把Event全部转换为小写，并且拼接上MessageProcessor作为ID
-				String id = msg.getEvent().toLowerCase() + "MessageProcessor";
-				// 3.使用ID到Spring容器获取一个Bean
-				try {
-					EventMessageProcessor mp = (EventMessageProcessor) ctx.getBean(id);
-					// 4.强制类型转换以后，调用onMessage方法
-					if (mp != null) {
-						mp.onMessage(msg);
-					} else {
-						LOG.warn("Bean的ID {} 无法调用对应的消息处理器: {} 对应的Bean不存在", id, id);
-					}
-				} catch (Exception e) {
-					LOG.warn("Bean的ID {} 无法调用对应的消息处理器: {}", id, e.getMessage());
-					LOG.trace(e.getMessage(), e);
-				}
-	}
-   
-	@Bean
-	public ObjectMapper objectMapper() {
-		return new ObjectMapper();
-	}
-	
-	public static void main(String[] args) throws InterruptedException {
-		SpringApplication.run(SubscribeApplication.class, args);
-//		System.out.println("Spring Boot应用启动成功");
-//		// 让程序进入等待、不要退出
-//		CountDownLatch countDownLatch = new CountDownLatch(1);
-//		countDownLatch.await();
-	}
+@Override
+public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+ctx = applicationContext;
+}
 
- 
-	
+@Override
+public void handle(EventInMessage msg) {
+// 1.当前类实现ApplicationContextAware接口，用于获得Spring容器
+// 2.把Event全部转换为小写，并且拼接上MessageProcessor作为ID
+String id = msg.getEvent().toLowerCase() + "MessageProcessor";
+// 3.使用ID到Spring容器获取一个Bean
+try {
+	EventMessageProcessor mp = (EventMessageProcessor) ctx.getBean(id);
+	// 4.强制类型转换以后，调用onMessage方法
+	if (mp != null) {
+		mp.onMessage(msg);
+	} else {
+		LOG.warn("Bean的ID {} 无法调用对应的消息处理器: {} 对应的Bean不存在", id, id);
+	}
+} catch (Exception e) {
+	LOG.warn("Bean的ID {} 无法调用对应的消息处理器: {}", id, e.getMessage());
+//	LOG.trace(e.getMessage(), e);
+}
+}
+
+@Bean
+public ObjectMapper objectMapper() {
+return new ObjectMapper();
+}
+
+public static void main(String[] args) throws InterruptedException {
+SpringApplication.run(UnsubscribeApplication.class, args);
+//System.out.println("Spring Boot应用启动成功");
+// 让程序进入等待、不要退出
+//CountDownLatch countDownLatch = new CountDownLatch(1);
+//countDownLatch.await();
+}
 
 }
